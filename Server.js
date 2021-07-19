@@ -12,10 +12,8 @@ app.use(express.json());
 const db = knex({
   client: "pg",
   connection: {
-    host: "127.0.0.1",
-    user: "postgres",
-    password: "sql",
-    database: "smart_brain",
+    connectionString: process.env.DATABASE_URL,
+    ssl: true,
   },
 });
 
@@ -91,7 +89,7 @@ app.post("/register", (req, res) => {
           })
           .then((user) => res.json(user[0]));
       });
-  }).catch((err) => res.json("user present"));
+  }).catch((err) => res.status(400).json("user present"));
 });
 
 // prfile
