@@ -172,4 +172,6 @@ app.post("/clarifai", (req, res) => {
   }
 });
 
-app.listen(3001 | process.env.PORT, () => console.log("app is running"));
+app.listen(process.env.PORT || 3001, () =>
+  console.log("app is running", process.env.PORT)
+);
