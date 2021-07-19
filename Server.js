@@ -22,17 +22,12 @@ const db = knex({
   },
 });
 
-db.select("*")
-  .from("users")
-  .then((res) => console.log(res));
-
 app.get("/", (req, res) => {
   res.json("working");
 });
 
 // signin
 app.post("/singin", (req, res) => {
-  console.log("login");
   const { email, password } = req.body;
 
   //   if (
@@ -82,7 +77,6 @@ app.post("/register", (req, res) => {
   //   } else {
   //     res.json("user present");
   //   }
-  //   console.log(email, name);
 
   db.transaction(async (trx) => {
     trx
@@ -107,14 +101,12 @@ app.post("/register", (req, res) => {
 
 // prfile
 app.get("/profile/:uid", (req, res) => {
-  //   console.log("id");
   //   const { uid } = req.params;
   //   if (uid === database.users[0].id) {
   //     res.json(database.users[0]);
   //   } else {
   //     res.json("wrong id");
   //   }
-  //   console.log(uid);
   db.select("*")
     .from("users")
     .where({
@@ -134,14 +126,12 @@ app.get("/profile/:uid", (req, res) => {
 
 app.put("/image", (req, res) => {
   const { id } = req.body;
-  //   console.log("*".repeat(20));
   //   if (id === database.users[0].id) {
   //     database.users[0].entries++;
   //     res.json(database.users[0].entries);
   //   } else {
   //     res.status(400).json("wrong image");
   //   }
-  console.log(id);
   db("users")
     .where("id", "=", id)
     .increment("entries", 1)
@@ -160,14 +150,12 @@ app.put("/image", (req, res) => {
 const cla = new Clarifai.App({ apiKey: "f846012c64fa41fa91846b6a75ae6dfa" });
 app.post("/clarifai", (req, res) => {
   const bodyData = req.body;
-  console.log("in", bodyData.imgurl);
   if (bodyData.imgurl) {
     cla.models
       .predict(Clarifai.FACE_DETECT_MODEL, bodyData.imgurl)
       .then((data) => res.json(data))
       .catch((err) => res.status(400).json("error"));
   } else {
-    console.log("error", bodyData.imgurl);
     res.status(404).json("error");
   }
 });
