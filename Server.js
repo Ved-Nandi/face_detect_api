@@ -91,7 +91,7 @@ app.post("/register", (req, res) => {
       });
   }).catch((err) => res.status(400).json("user present"));
   console.log("*".repeat(50));
-  db.select("*").from("users").then(console.log);
+  db.select("*").from("users").then(console.log).catch(console.log);
 });
 
 // prfile
