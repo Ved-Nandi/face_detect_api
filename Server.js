@@ -1,11 +1,8 @@
 const express = require("express");
-const database = require("./user_data");
 const cors = require("cors");
 const knex = require("knex");
 const Clarifai = require("clarifai");
 const { checkpassword, hashpassword } = require("./bcryptpassword");
-const { hash } = require("bcrypt");
-const { response } = require("express");
 
 const app = express();
 app.use(cors());
@@ -22,9 +19,7 @@ const db = knex({
   },
 });
 
-app.get("/", (req, res) => {
-  res.json("working");
-});
+app.get("/", (req, res) => res.json("working"));
 
 // signin
 app.post("/singin", (req, res) => {
