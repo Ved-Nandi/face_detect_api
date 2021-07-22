@@ -57,7 +57,9 @@ app.post("/singin", (req, res) => {
 // register
 app.post("/register", (req, res) => {
   const { name, email, password } = req.body;
-
+  console.log("====================================");
+  console.log("in register");
+  console.log("====================================");
   db.transaction(async (trx) => {
     trx
       .insert({
@@ -77,7 +79,12 @@ app.post("/register", (req, res) => {
           })
           .then((user) => res.json(user[0]));
       });
-  }).catch((err) => res.status(400).json("user present"));
+  }).catch((err) => {
+    console.log("====================================");
+    console.log("soyhing erong");
+    console.log("====================================");
+    res.status(400).json("user present");
+  });
 });
 
 // prfile
