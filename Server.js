@@ -57,19 +57,6 @@ app.post("/singin", (req, res) => {
 // register
 app.post("/register", (req, res) => {
   const { name, email, password } = req.body;
-  //   if (email !== database.users[0].email) {
-  //     database.users.push({
-  //       id: "123",
-  //       name: name,
-  //       email: email,
-  //       password: password,
-  //       entries: 0,
-  //       joined: new Date(),
-  //     });
-  //     res.json(database.users[database.users.length - 1]);
-  //   } else {
-  //     res.json("user present");
-  //   }
 
   db.transaction(async (trx) => {
     trx
@@ -78,6 +65,7 @@ app.post("/register", (req, res) => {
         email,
       })
       .into("login")
+      .catch((err) => res.status(400).json("user present"))
       .returning("email")
       .then((loginemail) => {
         db("users")
@@ -90,8 +78,6 @@ app.post("/register", (req, res) => {
           .then((user) => res.json(user[0]));
       });
   }).catch((err) => res.status(400).json("user present"));
-  console.log("*".repeat(50));
-  db.select("*").from("users").then(console.log).catch(console.log);
 });
 
 // prfile
