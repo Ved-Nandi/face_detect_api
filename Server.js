@@ -67,7 +67,6 @@ app.post("/register", (req, res) => {
         email,
       })
       .into("login")
-      .catch((err) => res.status(400).json("user present"))
       .returning("email")
       .then((loginemail) => {
         db("users")
@@ -77,11 +76,12 @@ app.post("/register", (req, res) => {
             name,
             joined: new Date(),
           })
-          .then((user) => res.json(user[0]));
+          .then((user) => res.json(user[0]))
+          .catch((err) => res.status(400).json("user present"));
       });
   }).catch((err) => {
     console.log("====================================");
-    console.log("soyhing erong");
+    console.log("soyhing erong", err);
     console.log("====================================");
     res.status(400).json("user present");
   });
