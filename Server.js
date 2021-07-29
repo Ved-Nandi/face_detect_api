@@ -8,6 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const saltRounds = 10;
+
 // settingup database
 const db = knex({
   client: "pg",
@@ -23,21 +25,12 @@ app.get("/", (req, res) => res.json("working"));
 app.post("/singin", (req, res) => {
   const { email, password } = req.body;
 
-  //   if (
-  //     email === database.users[0].email &&
-  //     password === database.users[0].password
-  //   ) {
-  //     res.json(database.users[0]);
-  //   } else {
-  //     res.status(400).json("error");
-  //   }
-
   db.select("email", "hash")
     .from("login")
     .where("email", "=", email)
     .then(async (data) => {
       if (data.length) {
-        const valid = await checkpassword(password, data[0].hash);
+        const valid = bcrypt.compareSync(password, data[0].hash);
         if (valid) {
           db.select("*")
             .from("users")
@@ -60,31 +53,32 @@ app.post("/register", (req, res) => {
   console.log("====================================");
   console.log("in register");
   console.log("====================================");
-  db.transaction(async (trx) => {
+
+  const hash = bcrypt.hashSync(password, saltRounds);
+
+  db.transaction((trx) => {
     trx
       .insert({
-        hash: await hashpassword(password),
+        hash,
         email,
       })
       .into("login")
       .returning("email")
-      .then((loginemail) => {
-        db("users")
+      .then((logmail) => {
+        trx("users")
           .returning("*")
           .insert({
             email,
             name,
             joined: new Date(),
           })
-          .then((user) => res.json(user[0]))
-          .catch((err) => res.status(400).json("user present"));
-      });
-  }).catch((err) => {
-    console.log("====================================");
-    console.log("soyhing erong", err);
-    console.log("====================================");
-    res.status(400).json("user present");
-  });
+          .then((user) => {
+            res.json(user[0]);
+          });
+      })
+      .then(trx.commit)
+      .catch(trx.rollback);
+  }).catch((err) => res.status(400).json("user present"));
 });
 
 // prfile
